@@ -11,8 +11,7 @@ import jakarta.persistence.Id;
  *  A unique id is generated when a new customer is created.
  */
 @Entity
-public
-class Customer {
+public class Customer {
     private @Id @GeneratedValue Long id;
     private String name;
     private String address;

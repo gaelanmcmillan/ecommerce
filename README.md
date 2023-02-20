@@ -2,7 +2,7 @@
 A hypermedia-driven REST back end for an e-commerce web application.
 Supports the creation, reading, updating and deletion of customers, orders, products.
 Uses [Spring Boot](https://spring.io/web-applications),
-the [Java Persistence API (JPA)](https://jakarta.ee/specifications/persistence/3.0/), 
+[Jakarta Persistence](https://jakarta.ee/specifications/persistence/3.0/), 
 [H2 Database](https://www.h2database.com/html/main.html) and [Spring HATEOS](https://spring.io/guides/gs/rest-hateoas/).
 Built with [Maven](https://maven.apache.org/what-is-maven.html).
 
