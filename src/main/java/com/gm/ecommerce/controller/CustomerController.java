@@ -1,5 +1,6 @@
 package com.gm.ecommerce.controller;
 
+import com.gm.ecommerce.assembler.GenericAssembler;
 import com.gm.ecommerce.model.Customer;
 import com.gm.ecommerce.repository.CustomerRepository;
 import com.gm.ecommerce.exception.CustomerNotFoundException;
@@ -20,6 +21,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 public class CustomerController {
     private final CustomerRepository repository;
+    private final GenericAssembler<Customer> assembler = new GenericAssembler<Customer>(
+            customer -> EntityModel.of(customer,
+                    linkTo(methodOn(CustomerController.class).one(customer.getId())).withSelfRel(),
+                    linkTo(methodOn(CustomerController.class).all()).withRel("customers"))
+    );
 
     CustomerController (CustomerRepository repository) {
         this.repository = repository;
@@ -34,9 +40,7 @@ public class CustomerController {
     @GetMapping("/customers")
     CollectionModel<EntityModel<Customer>> all () {
         List<EntityModel<Customer>> customers = repository.findAll().stream()
-                .map(customer -> EntityModel.of(customer,
-                        linkTo(methodOn(CustomerController.class).one(customer.getId())).withSelfRel(),
-                        linkTo(methodOn(CustomerController.class).all()).withRel("customers")))
+                .map(assembler::toModel)
                 .collect(Collectors.toList());
 
         return CollectionModel.of(customers, linkTo(methodOn(CustomerController.class).all()).withSelfRel());
@@ -53,9 +57,7 @@ public class CustomerController {
         Customer customer = repository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id));
 
-        return EntityModel.of(customer,
-                linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
-                linkTo(methodOn(CustomerController.class).all()).withRel("customers"));
+        return assembler.toModel(customer);
     }
 
     @PutMapping("/customers/{id}")
