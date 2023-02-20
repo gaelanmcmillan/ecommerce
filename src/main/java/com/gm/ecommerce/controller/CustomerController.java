@@ -3,9 +3,16 @@ package com.gm.ecommerce.controller;
 import com.gm.ecommerce.model.Customer;
 import com.gm.ecommerce.repository.CustomerRepository;
 import com.gm.ecommerce.exception.CustomerNotFoundException;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 // `@RestController` indicates that the data returned by each method
 // will be written straight into the response body
@@ -18,10 +25,23 @@ public class CustomerController {
         this.repository = repository;
     }
 
+    // Below is an ASCIIDoc tag.
+    // Read more here: https://docs.asciidoctor.org/asciidoc/latest/directives/include-tagged-regions/
+
+    // Aggregate Root
+
+    // tag::get-aggregate-root[]
     @GetMapping("/customers")
-    List<Customer> all () {
-        return repository.findAll();
+    CollectionModel<EntityModel<Customer>> all () {
+        List<EntityModel<Customer>> customers = repository.findAll().stream()
+                .map(customer -> EntityModel.of(customer,
+                        linkTo(methodOn(CustomerController.class).one(customer.getId())).withSelfRel(),
+                        linkTo(methodOn(CustomerController.class).all()).withRel("customers")))
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(customers, linkTo(methodOn(CustomerController.class).all()).withSelfRel());
     }
+    // end::get-aggregate-root[]
 
     @PostMapping("/customers")
     Customer newCustomer (@RequestBody Customer newCustomer) {
@@ -29,9 +49,13 @@ public class CustomerController {
     }
 
     @GetMapping("/customers/{id}")
-    Customer one (@PathVariable Long id) {
-        return repository.findById(id)
+    EntityModel<Customer> one (@PathVariable Long id) {
+        Customer customer = repository.findById(id)
                 .orElseThrow(() -> new CustomerNotFoundException(id));
+
+        return EntityModel.of(customer,
+                linkTo(methodOn(CustomerController.class).one(id)).withSelfRel(),
+                linkTo(methodOn(CustomerController.class).all()).withRel("customers"));
     }
 
     @PutMapping("/customers/{id}")
@@ -49,6 +73,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/customers/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     void deleteCustomer(@PathVariable Long id) {
         repository.deleteById(id);
     }
