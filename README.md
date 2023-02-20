@@ -2,7 +2,7 @@
 
 ## To run
 ### IntelliJ IDEA
-*Run > Run 'EcommerceApplication'*
+In the menu bar, navigate to `Run` > `Run 'EcommerceApplication'`
 ### Command Line
 ```shell
 ./mvnw clean spring-boot:run
@@ -45,13 +45,13 @@ curl -X POST localhost:8080/customers -H \
 ```
 [Go back to examples](#examples--curl)
 
-#### Get all customers
-##### Request
+### Get all customers
+#### Request
 ```shell
 # /customers
 curl -X GET localhost:8080/customers
 ```
-##### Response
+#### Response
 ```json
 {
    "_embedded" : {
@@ -93,13 +93,13 @@ curl -X GET localhost:8080/customers
 ```
 [Go back to examples](#examples--curl)
 
-#### Get customer by ID
-##### Request
+### Get customer by ID
+#### Request
 ```shell
 # /customers/{id}
 curl -X GET localhost:8080/customers/1
 ```
-##### Response
+#### Response
 ```json
 {
    "_links" : {
@@ -117,13 +117,13 @@ curl -X GET localhost:8080/customers/1
 ```
 [Go back to examples](#examples--curl)
 
-#### Get Customer by ID
-##### Request
+### Get Customer by ID
+#### Request
 ```shell
 # /customers/{id}
 curl localhost:8080/customers/1
 ```
-##### Response
+#### Response
 ```json
 {
    "_links" : {
@@ -141,15 +141,15 @@ curl localhost:8080/customers/1
 ```
 [Go back to examples](#examples--curl)
 
-#### Replace customer by ID
-##### Request
+### Replace customer by ID
+#### Request
 ```shell
 # /customers/{id}
 curl -X PUT localhost:8080/customers/1 -H \
         'Content-type:application/json' -d \
         '{"name":"John Smith", "address":"456 New Address Boulevard"}'
 ```
-##### Response
+#### Response
 ```json
 {
   "address" : "456 New Address Boulevard",
@@ -159,13 +159,13 @@ curl -X PUT localhost:8080/customers/1 -H \
 ```
 [Go back to examples](#examples--curl)
 
-#### Delete customer by ID
-##### Request
+### Delete customer by ID
+#### Request
 ```shell
 # /customers/{id}
 curl -X DELETE localhost:8080/customers/1
 ```
-##### Response
-Deletetion will return an `HTTP 204 No Content` on success.
+#### Response
+Deletion will return an `HTTP 204 No Content` on success.
 
 [Go back to examples](#examples--curl)
