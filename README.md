@@ -25,13 +25,18 @@ By default, this should be `localhost:8080`.
 to make the output more readable.*
 #### Create
 + [Create new customer](#create-new-customer)
++ [Place new order](#place-new-order)
 #### Read
 + [Get all customers](#get-all-customers)
 + [Get customer by ID](#get-customer-by-id)
++ [Get all orders](#get-all-orders)
++ [Get order by ID](#get-order-by-id)
 #### Update
 + [Replace customer by ID](#replace-customer-by-id)
++ [Complete order by ID](#complete-order-by-id)
 #### Delete
 + [Delete customer by ID](#delete-customer-by-id)
++ [Cancel order by ID](#cancel-order-by-id)
 
 #### Create new customer
 ##### Request
@@ -47,6 +52,38 @@ curl -X POST localhost:8080/customers -H \
    "address" : "1 Shopalot Place",
    "id" : 3,
    "name" : "Sir Buysmore"
+}
+```
+[Go back to examples](#examples--curl)
+
+#### Place new order
+##### Request
+```shell
+# /orders {"description":""}
+curl -X POST localhost:8080/orders -H \
+        'Content-type:application/json' -d \
+        '{"description": "A bunch of products"}'
+```
+##### Response
+```json
+{
+  "_links" : {
+    "cancel" : {
+      "href" : "http://localhost:8080/orders/1/cancel"
+    },
+    "complete" : {
+      "href" : "http://localhost:8080/orders/1/complete"
+    },
+    "orders" : {
+      "href" : "http://localhost:8080/customers"
+    },
+    "self" : {
+      "href" : "http://localhost:8080/customers/1"
+    }
+  },
+  "description" : "A bunch of products",
+  "id" : 1,
+  "status" : "IN_PROGRESS"
 }
 ```
 [Go back to examples](#examples--curl)
