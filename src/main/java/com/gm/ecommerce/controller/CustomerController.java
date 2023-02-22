@@ -6,9 +6,12 @@ import com.gm.ecommerce.repository.CustomerRepository;
 import com.gm.ecommerce.exception.CustomerNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +36,6 @@ public class CustomerController {
 
     // Below is an ASCIIDoc tag.
     // Read more here: https://docs.asciidoctor.org/asciidoc/latest/directives/include-tagged-regions/
-
     // Aggregate Root
 
     // tag::get-aggregate-root[]
@@ -48,8 +50,11 @@ public class CustomerController {
     // end::get-aggregate-root[]
 
     @PostMapping("/customers")
-    Customer newCustomer (@RequestBody Customer newCustomer) {
-        return repository.save(newCustomer);
+    ResponseEntity<?> newCustomer (@RequestBody Customer newCustomer) {
+        EntityModel<Customer> entityModel = assembler.toModel(repository.save(newCustomer));
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     @GetMapping("/customers/{id}")
@@ -61,8 +66,8 @@ public class CustomerController {
     }
 
     @PutMapping("/customers/{id}")
-    Customer replaceCustomer (@RequestBody Customer newCustomer, @PathVariable Long id) {
-        return repository.findById(id)
+    ResponseEntity<?> replaceCustomer (@RequestBody Customer newCustomer, @PathVariable Long id) {
+        Customer updatedCustomer = repository.findById(id)
                 .map(customer -> {
                     customer.setName(newCustomer.getName());
                     customer.setAddress(newCustomer.getAddress());
@@ -72,11 +77,17 @@ public class CustomerController {
                     newCustomer.setId(id);
                     return repository.save(newCustomer);
                 });
+
+        EntityModel<Customer> entityModel = assembler.toModel(updatedCustomer);
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     @DeleteMapping("/customers/{id}")
-    @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    void deleteCustomer(@PathVariable Long id) {
+    ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
         repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
