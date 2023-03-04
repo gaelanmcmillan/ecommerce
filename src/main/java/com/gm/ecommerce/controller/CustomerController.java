@@ -4,11 +4,14 @@ import com.gm.ecommerce.assembler.GenericAssembler;
 import com.gm.ecommerce.model.Customer;
 import com.gm.ecommerce.repository.CustomerRepository;
 import com.gm.ecommerce.exception.CustomerNotFoundException;
+import jakarta.validation.Valid;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.parser.Entity;
@@ -50,7 +53,15 @@ public class CustomerController {
     // end::get-aggregate-root[]
 
     @PostMapping("/customers")
-    ResponseEntity<?> newCustomer (@RequestBody Customer newCustomer) {
+    ResponseEntity<?> newCustomer (@Valid @RequestBody Customer newCustomer, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .collect(Collectors.joining(", "));
+
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
         EntityModel<Customer> entityModel = assembler.toModel(repository.save(newCustomer));
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

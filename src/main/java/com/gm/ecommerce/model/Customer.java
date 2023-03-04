@@ -5,6 +5,7 @@ import java.util.Objects;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Size;
 
 /**
  *  <b>Customer</b> defines a registered customer. It keeps track of the customer's name and address.
@@ -13,6 +14,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Customer {
     private @Id @GeneratedValue Long id;
+    @Size(min=1, max=255, message="Name should be between 1 and 255 characters in length.")
     private String name;
     private String address;
 
